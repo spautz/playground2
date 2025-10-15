@@ -1,0 +1,41 @@
+@layer reset, base, components, page;
+
+@layer base {
+  .overview {
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      avenir next,
+      avenir,
+      segoe ui,
+      helvetica neue,
+      Adwaita Sans,
+      Cantarell,
+      Ubuntu,
+      roboto,
+      noto,
+      helvetica,
+      arial,
+      sans-serif;
+    line-height: 1.75;
+    margin: 0 1.5rem;
+    max-width: 45rem;
+  }
+
+  code {
+    font-family:
+      Menlo,
+      Consolas,
+      Monaco,
+      Adwaita Mono,
+      Liberation Mono,
+      Lucida Console,
+      monospace;
+  }
+
+  fieldset {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 1rem 1rem;
+  }
+}

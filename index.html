@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Animated Grid Layout Experiments</title>
+    <meta name="theme-color" content="#006098" />
+
+    <meta
+      name="description"
+      content="Proof-of-concept explorations into animating dynamic grid layouts"
+    />
+
+    <!-- <link rel="stylesheet" href="reset.css"/> -->
+    <link rel="stylesheet" href="page.css" />
+  </head>
+
+  <body>
+    <main class="overview">
+      <h1>Animated Grid Layout Experiments (CSS-only)</h1>
+      <p>
+        CSS grid layouts using named areas are great for defining layouts, especially when driven
+        using decoupled custom properties to drive state, responsiveness, etc.
+      </p>
+      <p>
+        You cannot natively animate between property-driven grid states, however:
+        <code>grid-template-areas</code> does not support transitions, and interpolation of
+        <code>grid-template-columns</code>/<code>grid-template-rows</code> only works with a
+        constant number of values.
+      </p>
+      <p>There's really no need to animate the layouts, but it's a neat technical challenge.</p>
+      <hr />
+      <h2>Demos</h2>
+      <ul>
+        <li>
+          <h3><a href="./plain-grid-layout.html">Plain grid layout (no animations)</a></h3>
+          <p>Basic setup: good enough for almost any application, but not a showy demo.</p>
+        </li>
+        <li>
+          <h3>
+            <a href="./layout-anchors-with-duplicated-content.html"
+              >Anchors to duplicated content</a
+            >
+          </h3>
+          <p>Animations work, but you must either know or match the cell sizes.</p>
+        </li>
+        <li>
+          <h3><a href="./anchor-layout.html">Micromanaged anchor layout</a></h3>
+          <p>Grid implemented fully in anchors, no grid-areas.</p>
+        </li>
+      </ul>
+      <hr />
+      <p>
+        These only work in browsers which support
+        <a href="https://caniuse.com/css-container-queries-style" rel="noopener" target="_blank"
+          >Container Style() Queries</a
+        >
+        and
+        <a href="https://caniuse.com/css-anchor-positioning" rel="noopener" target="_blank"
+          >Anchor Positioning</a
+        >.
+      </p>
+    </main>
+  </body>
+</html>
