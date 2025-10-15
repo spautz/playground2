@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Animated Grid Layout Experiments: Anchors to duplicated content</title>
+    <meta name="theme-color" content="#006098" />
+
+    <meta
+      name="description"
+      content="Basic demo of a dynamic grid layout, using css anchors to animate between layouts"
+    />
+
+    <!-- <link rel="stylesheet" href="reset.css"/> -->
+    <link rel="stylesheet" href="page.css" />
+
+    <style>
+      @property --preferred-layout {
+        initial-value: 'mobile';
+        inherits: true;
+        syntax: 'mobile | tablet | desktop | widescreen';
+      }
+
+      @layer page {
+        :root {
+          /*
+           * "Causes": These triggers determine the layout:
+           *  - Default to responsive
+           *  - Override with a radio button for an exact value
+           *
+           * In a normal app we'd probably use container queries on the element itself.
+           * This demo displays the `--preferred-layout` value on screen outside of the element,
+           * though, so it needs to be higher up in the page.
+           */
+
+          --preferred-layout: 'mobile';
+
+          @media (min-width: 700px) {
+            --preferred-layout: 'tablet';
+          }
+          @media (min-width: 1000px) {
+            --preferred-layout: 'desktop';
+          }
+          @media (min-width: 1400px) {
+            --preferred-layout: 'widescreen';
+          }
+
+          /* Override with radio buttons for exact values */
+          &:has(input[name='layout'][value='mobile']:checked) {
+            --preferred-layout: 'mobile';
+          }
+
+          &:has(input[name='layout'][value='tablet']:checked) {
+            --preferred-layout: 'tablet';
+          }
+
+          &:has(input[name='layout'][value='desktop']:checked) {
+            --preferred-layout: 'desktop';
+          }
+
+          &:has(input[name='layout'][value='widescreen']:checked) {
+            --preferred-layout: 'widescreen';
+          }
+
+          /* Let the element decide for itself (resizer + container queries) */
+          &:has(input[name='layout'][value='resizer']:checked) {
+            --preferred-layout: 'element-size';
+          }
+
+          /* end "Causes" */
+        }
+
+        .tell-me-the-layout {
+          margin: 1rem;
+
+          &::after {
+            content: var(--preferred-layout);
+          }
+        }
+
+        .resizer {
+          border: 1px solid #888;
+          container-type: inline-size;
+          margin: 1rem;
+          overflow: auto;
+          resize: if(style(--preferred-layout: 'element-size'): both; else: none);
+        }
+
+        .dynamic-layout {
+          display: grid;
+          reading-flow: grid-rows;
+          transition-behavior: allow-discrete;
+
+          & > * {
+            min-height: 1rem;
+            padding: 1rem 2rem;
+            visibility: hidden;
+          }
+
+          /*
+           * "Effects": This is where we apply the `--preferred-layout`. We don't care how or where it was set:
+           * the implementation of styles is decoupled from the raw selectors above.
+           */
+
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            'logo'
+            'nav'
+            'intro'
+            'main'
+            'footer';
+
+          @container style(--preferred-layout: 'tablet') {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+              'logo nav'
+              'intro intro'
+              'main main'
+              'footer footer';
+          }
+
+          @container style(--preferred-layout: 'desktop') {
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-areas:
+              'logo intro nav'
+              'main main main'
+              'footer footer footer';
+          }
+
+          @container style(--preferred-layout: 'widescreen') {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-areas:
+              'logo logo logo logo'
+              'nav intro intro intro'
+              'nav main main main'
+              'nav footer footer footer';
+          }
+
+          /* end "Effects" */
+        }
+
+        .position-for-logo {
+          grid-area: logo;
+          anchor-name: --logo;
+        }
+
+        .position-for-nav {
+          grid-area: nav;
+          anchor-name: --nav;
+        }
+
+        .position-for-intro {
+          grid-area: intro;
+          anchor-name: --intro;
+        }
+
+        .position-for-main {
+          grid-area: main;
+          anchor-name: --main;
+        }
+
+        .position-for-footer {
+          grid-area: footer;
+          anchor-name: --footer;
+        }
+
+        /* Align the `.content-for-*` blocks with their `.position-for-*` locations */
+        .content-for-logo,
+        .content-for-nav,
+        .content-for-intro,
+        .content-for-main,
+        .content-for-footer {
+          position: absolute;
+          padding: 1rem 2rem;
+          /*transition: top 0ms, left 0ms, bottom 300ms, right 300ms;*/
+          /*transition: top 100ms, left 100ms, bottom 300ms, right 300ms;*/
+          transition: all 300ms;
+
+          /*position-anchor: var(--target-in-grid);*/
+          top: anchor(var(--target-in-grid) top);
+          left: anchor(var(--target-in-grid) left);
+          right: anchor(var(--target-in-grid) right);
+          bottom: anchor(var(--target-in-grid) bottom);
+        }
+
+        .content-for-logo {
+          --target-in-grid: --logo;
+          background-color: #faa;
+        }
+
+        .content-for-nav {
+          --target-in-grid: --nav;
+          background-color: #afa;
+        }
+
+        .content-for-intro {
+          --target-in-grid: --intro;
+          background-color: #aaf;
+        }
+
+        .content-for-main {
+          --target-in-grid: --main;
+          background-color: #ccc;
+        }
+
+        .content-for-footer {
+          --target-in-grid: --footer;
+          background-color: #ffa;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="overview">
+      <h1>Anchored Grid Layout</h1>
+      <a href="./index.html">Back to index</a>
+      <p>
+        This demo uses css anchor positioning to align content areas to a dynamic css grid. This
+        allows native animations when changing the grid layout.
+      </p>
+      <p>
+        The grid cell anchors must be sized correctly, however, or else the layout will be wrong.
+        This demo duplicates the content to ensure their sizes match. You could instead use
+        Javascript, or have a fixed layout instead of fluid.
+      </p>
+      <p>This demo does (C).</p>
+    </header>
+
+    <fieldset>
+      <legend>Set Layout:</legend>
+
+      <label>
+        <input type="radio" name="layout" value="media-query" checked />
+        Responsive
+      </label>
+      <label>
+        <input type="radio" name="layout" value="mobile" />
+        Mobile
+      </label>
+      <label>
+        <input type="radio" name="layout" value="tablet" />
+        Tablet
+      </label>
+      <label>
+        <input type="radio" name="layout" value="desktop" />
+        Desktop
+      </label>
+      <label>
+        <input type="radio" name="layout" value="widescreen" />
+        Widescreen
+      </label>
+      <!--  <label>-->
+      <!--    <input type="radio" name="layout" value="resizer" />-->
+      <!--    Resizer-->
+      <!--  </label>-->
+    </fieldset>
+
+    <code class="tell-me-the-layout">--preferred-layout: </code>
+
+    <div class="resizer">
+      <div class="dynamic-layout">
+        <div class="position-for-logo">Logo</div>
+        <nav class="position-for-nav">Nav</nav>
+        <header class="position-for-intro">Introduction</header>
+        <main class="position-for-main">
+          <p>Main Content</p>
+          <p>Main Content</p>
+          <p>Main Content</p>
+        </main>
+        <footer class="position-for-footer">Footer</footer>
+      </div>
+
+      <!-- Floating elements positioned to align with the above layout -->
+      <div class="content-for-logo">Logo</div>
+      <nav class="content-for-nav">Nav</nav>
+      <header class="content-for-intro">Introduction</header>
+      <main id="main-content" class="content-for-main">
+        <p>Main Content</p>
+        <p>Main Content</p>
+        <p>Main Content</p>
+      </main>
+      <footer class="content-for-footer">Footer</footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Animated Grid Layout Experiments: Anchor Layout</title>
+    <meta name="theme-color" content="#006098" />
+
+    <meta
+      name="description"
+      content="Proof-of-concept for using css anchors to replace a grid layout"
+    />
+
+    <!-- <link rel="stylesheet" href="reset.css"/> -->
+    <link rel="stylesheet" href="page.css" />
+
+    <style>
+      @property --preferred-layout {
+        initial-value: 'mobile';
+        inherits: true;
+        syntax: 'mobile | tablet | desktop | widescreen';
+      }
+
+      @layer page {
+        :root {
+          /*
+         * "Causes": These triggers determine the layout:
+         *  - Default to responsive
+         *  - Override with a radio button for an exact value
+         *
+         * In a normal app we'd probably use container queries on the element itself.
+         * This demo displays the `--preferred-layout` value on screen outside of the element,
+         * though, so it needs to be higher up in the page.
+         */
+
+          --preferred-layout: 'mobile';
+
+          @media (min-width: 700px) {
+            --preferred-layout: 'tablet';
+          }
+          @media (min-width: 1000px) {
+            --preferred-layout: 'desktop';
+          }
+          @media (min-width: 1400px) {
+            --preferred-layout: 'widescreen';
+          }
+
+          /* Override with radio buttons for exact values */
+          &:has(input[name='layout'][value='mobile']:checked) {
+            --preferred-layout: 'mobile';
+          }
+
+          &:has(input[name='layout'][value='tablet']:checked) {
+            --preferred-layout: 'tablet';
+          }
+
+          &:has(input[name='layout'][value='desktop']:checked) {
+            --preferred-layout: 'desktop';
+          }
+
+          &:has(input[name='layout'][value='widescreen']:checked) {
+            --preferred-layout: 'widescreen';
+          }
+
+          /* Let the element decide for itself (resizer + container queries) */
+          &:has(input[name='layout'][value='resizer']:checked) {
+            --preferred-layout: 'element-size';
+          }
+
+          /* end "Causes" */
+        }
+
+        .tell-me-the-layout {
+          margin: 1rem;
+
+          &::after {
+            content: var(--preferred-layout);
+          }
+        }
+
+        .resizer {
+          border: 1px solid #888;
+          container-type: inline-size;
+          margin: 1rem;
+          overflow: auto;
+          resize: if(style(--preferred-layout: 'element-size'): both; else: none);
+        }
+
+        .dynamic-layout {
+          anchor-name: --layout;
+
+          & > * {
+            padding: 1rem 2rem;
+            transition: all 200ms;
+          }
+
+          /*
+         * "Effects": This is where we apply the `--preferred-layout`. We don't care how or where it was set:
+         * the implementation of styles is decoupled from the raw selectors above.
+         */
+
+          .area-logo,
+          .area-nav,
+          .area-intro,
+          .area-main,
+          .area-footer {
+            position-anchor: --layout;
+            /* Default: fill width and attach to bottom of anchor point, until told otherwise */
+            top: anchor(bottom);
+            left: anchor(--layout left);
+            right: anchor(--layout right);
+          }
+
+          @container style(--preferred-layout: 'mobile') {
+            /* Isolate the mobile styles: we don't want a mobile-first cascade here */
+            .area-nav {
+              position-anchor: --logo;
+            }
+            .area-intro {
+              position-anchor: --nav;
+            }
+            .area-main {
+              position-anchor: --intro;
+            }
+            .area-footer {
+              position-anchor: --main;
+            }
+          }
+
+          @container style(--preferred-layout: 'tablet') {
+            /* Split the top row */
+            --_midpoint: calc((anchor(--layout left) + anchor(--layout right)) / 2);
+
+            .area-logo {
+              right: var(--_midpoint);
+            }
+            .area-nav {
+              left: var(--_midpoint);
+            }
+            .area-intro {
+              position-anchor: --nav;
+            }
+            .area-main {
+              position-anchor: --intro;
+            }
+            .area-footer {
+              position-anchor: --main;
+            }
+          }
+
+          @container style(--preferred-layout: 'desktop') {
+            /* Split the top row into thirds */
+            --_split_1_3: calc(
+              (anchor(--layout left) + anchor(--layout left) + anchor(--layout right)) / 3
+            );
+            --_split_2_3: calc(
+              (anchor(--layout left) + anchor(--layout right) + anchor(--layout right)) / 3
+            );
+
+            .area-logo {
+              right: var(--_split_1_3);
+            }
+            .area-nav {
+              left: var(--_split_2_3);
+            }
+            .area-intro {
+              left: var(--_split_1_3);
+              right: var(--_split_2_3);
+            }
+            .area-main {
+              position-anchor: --intro;
+            }
+            .area-footer {
+              position-anchor: --main;
+            }
+          }
+
+          @container style(--preferred-layout: 'widescreen') {
+            /* Nav sidebar takes up 20% */
+            --_nav-width: calc((4 * anchor(--layout left) + anchor(--layout right)) / 5);
+
+            .area-nav {
+              position-anchor: --logo;
+              right: var(--_nav-width);
+              bottom: anchor(--footer bottom);
+            }
+            .area-intro {
+              position-anchor: --logo;
+              left: var(--_nav-width);
+            }
+            .area-main {
+              position-anchor: --intro;
+              left: var(--_nav-width);
+            }
+            .area-footer {
+              position-anchor: --main;
+              left: var(--_nav-width);
+            }
+          }
+        }
+
+        .area-logo {
+          background-color: #faa;
+          position: absolute;
+          anchor-name: --logo;
+        }
+
+        .area-nav {
+          background-color: #afa;
+          position: absolute;
+          anchor-name: --nav;
+        }
+
+        .area-intro {
+          background-color: #aaf;
+          position: absolute;
+          anchor-name: --intro;
+        }
+
+        .area-main {
+          background-color: #ccc;
+          position: absolute;
+          anchor-name: --main;
+        }
+
+        .area-footer {
+          background-color: #ffa;
+          position: absolute;
+          anchor-name: --footer;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="overview">
+      <h1>Anchor Layout</h1>
+      <a href="./index.html">Back to index</a>
+      <p>
+        Reimplementing the grid entirely with anchors gives nice results, but it's more work because
+        you lose <code>grid-template-areas</code>.
+      </p>
+      <p>
+        This is limited by dom order: elements can only anchor to targets that come earlier on the
+        page. This prevents the Nav from bottom-anchoring to the Footer in Widescreen mode.
+      </p>
+    </header>
+
+    <fieldset>
+      <legend>Set Layout:</legend>
+
+      <label>
+        <input type="radio" name="layout" value="media-query" checked />
+        Responsive
+      </label>
+      <label>
+        <input type="radio" name="layout" value="mobile" />
+        Mobile
+      </label>
+      <label>
+        <input type="radio" name="layout" value="tablet" />
+        Tablet
+      </label>
+      <label>
+        <input type="radio" name="layout" value="desktop" />
+        Desktop
+      </label>
+      <label>
+        <input type="radio" name="layout" value="widescreen" />
+        Widescreen
+      </label>
+      <!--  <label>-->
+      <!--    <input type="radio" name="layout" value="resizer" />-->
+      <!--    Resizer-->
+      <!--  </label>-->
+    </fieldset>
+
+    <code class="tell-me-the-layout">--preferred-layout: </code>
+
+    <div class="resizer">
+      <div class="dynamic-layout">
+        <div class="area-logo">Logo</div>
+        <nav class="area-nav">Nav</nav>
+        <header class="area-intro">Introduction</header>
+        <main id="main-content" class="area-main">
+          <p>Main Content</p>
+          <p>Main Content</p>
+          <p>Main Content</p>
+        </main>
+        <footer class="area-footer">Footer</footer>
+      </div>
+    </div>
+  </body>
+</html>

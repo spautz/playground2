@@ -1,0 +1,44 @@
+{
+  "name": "@spautz/playground2",
+  "private": true,
+  "description": "Various demos and proof-of-concept attempts",
+  "license": "MIT",
+  "homepage": "https://github.com/spautz/playground2#readme",
+  "bugs": "https://github.com/spautz/playground2/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spautz/playground2.git"
+  },
+  "author": {
+    "name": "Steven Pautz",
+    "url": "https://stevenpautz.com/"
+  },
+  "engines": {
+    "node": "^24",
+    "pnpm": ">=10.18.3 <11"
+  },
+  "packageManager": "pnpm@10.18.3+sha512.bbd16e6d7286fd7e01f6b3c0b3c932cda2965c06a908328f74663f10a9aea51f1129eea615134bf992831b009eabe167ecb7008b597f40ff9bc75946aadfb08d",
+  "type": "module",
+  "scripts": {
+    "____ HOOKS _________________________________________________________": "",
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky",
+    "husky:precommit": "lint-staged",
+    "husky:prepush": "pnpm run format:verify",
+    "____ INDIVIDUAL COMMANDS ___________________________________________": "",
+    "format": "prettier --write .",
+    "format:verify": "prettier --list-different .",
+    "deploy:github": "gh-pages -d ./animated-grid-layout"
+  },
+  "devDependencies": {
+    "gh-pages": "6.3.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.4",
+    "prettier": "3.6.2"
+  },
+  "lint-staged": {
+    "*.{cjs,cts,css,html,js,jsx,json,less,md,mdx,mjs,mts,scss,ts,tsx,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
