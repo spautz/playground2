@@ -28,7 +28,7 @@
     "____ INDIVIDUAL COMMANDS ___________________________________________": "",
     "format": "prettier --write .",
     "format:verify": "prettier --list-different .",
-    "deploy:github": "gh-pages -d ./animated-grid-layout"
+    "deploy:github": "gh-pages -d ./public"
   },
   "devDependencies": {
     "gh-pages": "6.3.0",
