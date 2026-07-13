@@ -1,11 +1,11 @@
 # General settings
+blockExoticSubdeps: true
 engineStrict: true
-linkWorkspacePackages: true
-minimumReleaseAge: 1440 # 1 day
+minimumReleaseAge: 7200 # 5 days
 packageManagerStrictVersion: true
 strictDepBuilds: true
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 129600 # 90 days
 verifyDepsBeforeRun: error
-#onlyBuiltDependencies: []
-#ignoredBuiltDependencies: []
 
 # No workspace
