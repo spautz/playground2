@@ -26,18 +26,20 @@
     "husky:precommit": "lint-staged",
     "husky:prepush": "pnpm run format:verify",
     "____ INDIVIDUAL COMMANDS ___________________________________________": "",
+    "dev": "serve -s ./public",
+    "start": "serve -s ./public",
+    "deploy:github": "gh-pages -d ./public",
     "format": "prettier --write .",
-    "format:verify": "prettier --list-different .",
-    "deploy:github": "gh-pages -d ./public"
+    "format:verify": "prettier --list-different ."
   },
   "devDependencies": {
     "gh-pages": "6.3.0",
     "husky": "9.1.7",
-    "lint-staged": "16.2.4",
-    "prettier": "3.8.1"
+    "lint-staged": "17.0.8",
+    "prettier": "3.9.4"
   },
   "lint-staged": {
-    "*.{cjs,cts,css,html,js,jsx,json,less,md,mdx,mjs,mts,scss,ts,tsx,yaml}": [
+    "*.{cjs,cts,css,html,js,jsx,json,jsonc,less,md,mdx,mjs,mts,scss,ts,tsx,yaml}": [
       "prettier --write"
     ]
   }
