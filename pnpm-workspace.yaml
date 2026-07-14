@@ -9,3 +9,5 @@ trustPolicyIgnoreAfter: 129600 # 90 days
 verifyDepsBeforeRun: error
 
 # No workspace
+packages:
+  - '.'

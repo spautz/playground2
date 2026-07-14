@@ -25,6 +25,9 @@
     "prepare": "husky",
     "husky:precommit": "lint-staged",
     "husky:prepush": "pnpm run format:verify",
+    "____ STANDARD DEV TASKS ____________________________________________": "",
+    "all": "pnpm run format",
+    "all:ci": "pnpm run format:verify",
     "____ INDIVIDUAL COMMANDS ___________________________________________": "",
     "dev": "serve -s ./public",
     "start": "serve -s ./public",
@@ -36,7 +39,7 @@
     "gh-pages": "6.3.0",
     "husky": "9.1.7",
     "lint-staged": "17.0.8",
-    "prettier": "3.9.4",
+    "prettier": "3.9.5",
     "serve": "14.2.6"
   },
   "lint-staged": {
